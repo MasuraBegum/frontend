@@ -1,25 +1,54 @@
-import logo from './logo.svg';
+// App.js
+
+import React, { useState } from 'react';
+import axios from 'axios';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [file, setFile] = useState(null);
+  const [result, setResult] = useState('');
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleCheckPlagiarism = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post('http://your-backend-api/plagiarism-check', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setResult(response.data.result);
+    } catch (error) {
+      console.error('Error checking plagiarism:', error);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <div className="center-container">
+        <h1>Plagiarism Detector</h1>
+
+        <div className="input-container">
+          <input type="file" accept=".txt" onChange={handleFileChange} />
+        </div>
+
+        <button onClick={handleCheckPlagiarism}>Check Plagiarism</button>
+
+        {result && (
+          <div className="result-container">
+            <h2>Plagiarism Result:</h2>
+            <p>{result}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
